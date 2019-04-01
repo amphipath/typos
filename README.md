@@ -34,6 +34,25 @@ It will also define a function `typofind`, taking two parameters, `string` the i
 
 ## Examples
 
-```
-> typofind('clasroom', 0.02)
 
+
+```
+> typofind('classroom',0.02)
+[1] "classroom"
+> typofind('meering',0.02)
+[1] "meeting"
+> typofind('meeting',0.02)
+[1] "meeting"
+> typofind('he',0.02)
+[1] "he"
+> typofind('he',0.2)
+[1] "the"
+```
+
+The last examples show the importance of `typoprob`; in the dataset given `the` is more than 5 times as frequent as `he` but less than 50 times. So the decision between whether `he` was typo'd or not comes down to this probability.
+
+## Future improvements
+
+* **Punctuation**: With a larger dataset, some punctuation can also be corrected (e.g. `is'nt` to `isn't`).
+* **More sophisticated distance metric**: Not all typos are born equal. Insertion typos are more likely if the keys for each other are closer together (`somerthing` being more likely than `somezthing` on the most common QWERTY keyboards). On top of that, under a Poisson model for typos the probability of a longer word having a typo is more likely than that of shorter words. Under such models the score would have to be adjusted individually based on the likelihood of the specific typo being made, since the metric is no longer contained in the integers. 
+* **Different dictionary**: Under this model each word is assumed to be independently likely. A more complicated model may include the use of n-grams to increase or decrease the likelihood of a word based on adjacent words in the sentence.
