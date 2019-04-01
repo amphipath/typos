@@ -43,6 +43,8 @@ It will also define a function `typofind`, taking two parameters, `string` the i
 [1] "meeting"
 > typofind('meeting',0.02)
 [1] "meeting"
+> typofind('alsdkjflaksdjflkajd',0.02)
+[1] NA
 > typofind('pen',0.02)
 [1] "men"
 > typofind('pen',0.01)
@@ -56,3 +58,4 @@ The last examples show the importance of `typoprob`; in the dataset given `men` 
 * **Punctuation**: With a larger dataset, some punctuation can also be corrected (e.g. `is'nt` to `isn't`).
 * **More sophisticated distance metric**: Not all typos are born equal. Insertion typos are more likely if the keys for each other are closer together (`somerthing` being more likely than `somezthing` on the most common QWERTY keyboards). On top of that, under a Poisson model for typos the probability of a longer word having a typo is more likely than that of shorter words. Under such models the score would have to be adjusted individually based on the likelihood of the specific typo being made, since the metric is no longer contained in the integers. 
 * **Different dictionary**: Under this model each word is assumed to be independently likely. A more complicated model may include the use of n-grams to increase or decrease the likelihood of a word based on adjacent words in the sentence.
+* **Optimisation**: The running time for `typofind` is O(n^2) where `n` is the length of the string due to the rudimentary brute force method. If the function started from the dictionary and tried to reach the given string running time would be constant, but this would require a function to calculate the distance between two strings explicitly which would require a bit of study.
