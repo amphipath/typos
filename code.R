@@ -71,7 +71,55 @@ list
 
 dict <- findMostFreqTerms(tdm,10000,INDEX=rep(1,length(data)))$`1`
 
-#build a function 1offsearcher that takes a string, and makes system of regex strings that match all typos of metric 1 from given string
-1offsearcher <- function(string) {
+#build a function oneoffs that takes a string, and lists out all the possible 1-distance typos from it
+
+#a given string of length l has l deletions, l-1 transpositions, 26l substitutions and 26(l+1) insertions
+
+oneoffs <- function(string) {
+  splitstring <- strsplit(string,"")[[1]]
+  l <- length(splitstring)
+  dels <- character(l)
+  trans <- character(l-1)
+  subs <- character(26*l)
+  inserts <- character(26*(l+1))
+  #sub-function that creates a numeric vector to swap the kth and k+1th entries
+  transpose <- function(k,l) {
+    order <- 1:l
+    order[k] <- k+1
+    order[k+1] <- k
+    order
+  }
   
+  for(i in 1:l) {
+    if (i < l) {
+      trans[i] <- paste0(splitstring[transpose(i,l)],collapse="")
+    }
+    dels[i] <- paste0(splitstring[-i],collapse="")
+  }
+  
+  for(i in 1:l) {
+    base <- 26*(i-1)
+    for(j in 1:26) {
+      index <- base+j
+      substitutedstring <- splitstring
+      substitutedstring[i] <- letters[j]
+      subs[index] <- paste0(substitutedstring,collapse="")
+      
+      beforei <- splitstring[0:(i-1)]
+      afteri <- splitstring[i:l]
+      inserts[index] <- paste0(c(beforei,letters[j],afteri),collapse="")
+    }
+  }
+  
+  for(j in 1:26) {
+    k <- 26 * l + j
+    inserts[k] <- paste0(c(splitstring,letters[j]),collapse="")
+  }
+  results <- c(dels,trans,subs,inserts)
+  print(dels)
+  print(trans)
+  print(subs)
+  print(inserts)
+  results
 }
+
