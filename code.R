@@ -42,6 +42,7 @@ oneoffs <- function(string) {
     order
   }
   
+  #start building the list of typos
   for(i in 1:l) {
     if (i < l) {
       trans[i] <- paste0(splitstring[transpose(i,l)],collapse="")
@@ -67,10 +68,10 @@ oneoffs <- function(string) {
     k <- 26 * l + j
     inserts[k] <- paste0(c(splitstring,letters[j]),collapse="")
   }
-  
+  #typos may not be unique, and may become an empty string, and may return original string
   results <- unique(c(dels,trans,subs,inserts))
   results <- setdiff(results,c(string,""))
-  #typos may not be unique, and may become an empty string
+
   results
 }
 
