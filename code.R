@@ -14,7 +14,8 @@ cor <- cor %>%
   tm_map(removeNumbers) %>%
   tm_map(removePunctuation)
 
-tdm <- TermDocumentMatrix(cor)
+#build a term document matrix; make sure to include short words and stop words
+tdm <- TermDocumentMatrix(cor,control = list(stopwords = FALSE,wordLengths=c(1,Inf)))
 
 
 #build a dictionary of words to use
@@ -125,7 +126,10 @@ typofind <- function(string,typoprob) {
   
   #sort and return the most likely intended word
   if(nrow(candidates) > 0) {
+    candidates$score <- as.numeric(candidates$score)
     candidates <- head(candidates[order(candidates$score,decreasing = TRUE),],-1)
+    print(candidates)
+    print(class(candidates$score))
     return(candidates[1,1])
   }
   else {
