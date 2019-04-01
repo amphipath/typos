@@ -128,8 +128,6 @@ typofind <- function(string,typoprob) {
   if(nrow(candidates) > 0) {
     candidates$score <- as.numeric(candidates$score)
     candidates <- head(candidates[order(candidates$score,decreasing = TRUE),],-1)
-    print(candidates)
-    print(class(candidates$score))
     return(candidates[1,1])
   }
   else {
