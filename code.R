@@ -69,19 +69,21 @@ list
 
 #build a dictionary of words to use, let's use 10000
 
-dict <- findMostFreqTerms(tdm,10000,INDEX=rep(1,length(data)))$`1`
+dict <- findMostFreqTerms(tdm,50000,INDEX=rep(1,length(data)))$`1`
 
 #build a function oneoffs that takes a string, and lists out all the possible 1-distance typos from it
-
 #a given string of length l has l deletions, l-1 transpositions, 26l substitutions and 26(l+1) insertions
 
 oneoffs <- function(string) {
   splitstring <- strsplit(string,"")[[1]]
   l <- length(splitstring)
+  
+  #declare variables to contain the different types of typos
   dels <- character(l)
   trans <- character(l-1)
   subs <- character(26*l)
   inserts <- character(26*(l+1))
+  
   #sub-function that creates a numeric vector to swap the kth and k+1th entries
   transpose <- function(k,l) {
     order <- 1:l
@@ -115,11 +117,61 @@ oneoffs <- function(string) {
     k <- 26 * l + j
     inserts[k] <- paste0(c(splitstring,letters[j]),collapse="")
   }
-  results <- c(dels,trans,subs,inserts)
-  print(dels)
-  print(trans)
-  print(subs)
-  print(inserts)
+  
+  results <- unique(c(dels,trans,subs,inserts))
+  results <- setdiff(results,c(string,""))
+  #typos may not be unique, and may become an empty string
   results
 }
 
+
+
+#twooffs is a function that generates all possible two-off typos
+
+twooffs <- function(string) {
+  step1 <- oneoffs(string)
+  
+  #iteratively perform oneoffs on each of the one-off typos. li is used to store the oneoffs
+  li <- list()
+  
+  for(i in 1:length(step1)) {
+    li[[i]] <- oneoffs(step1[i])
+  }
+  #collapse the list into a character vector
+  li <- unique(unlist(li))
+  
+  #take the set difference of 2-offs and 1 offs and the original string
+  li <- setdiff(li,c(string,step1,""))
+  li
+}
+
+
+#final execution
+
+typofind <- function(string,typoprob) {
+  candidates <- data.frame(word = "",score = 0,stringsAsFactors = FALSE)
+  oneoff <- intersect(names(dict),oneoffs(string))
+  twooff <- intersect(names(dict),twooffs(string))
+  
+  if(string %in% names(dict)) {
+    candidates <- rbind(candidates,c(string,as.numeric(dict[string])))
+  }
+  if(length(oneoff) > 0) {
+    word <- oneoff[1]
+    score <- as.numeric(dict[word]) * typoprob
+    candidates <- rbind(candidates,c(word,score))
+  }
+  if(length(twooff) > 0) {
+    word <- twooff[1]
+    score <- as.numeric(dict[word]) * (typoprob^2)
+    candidates <- rbind(candidates,c(word,score))
+  }
+  if(nrow(candidates) > 0) {
+    candidates <- head(candidates[order(candidates$score,decreasing = TRUE),],-1)
+    print(candidates)
+    return(candidates[1,1])
+  }
+  else {
+    return(NULL)
+  }
+}
