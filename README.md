@@ -43,13 +43,13 @@ It will also define a function `typofind`, taking two parameters, `string` the i
 [1] "meeting"
 > typofind('meeting',0.02)
 [1] "meeting"
-> typofind('he',0.02)
-[1] "he"
-> typofind('he',0.2)
-[1] "the"
+> typofind('pen',0.02)
+[1] "men"
+> typofind('pen',0.01)
+[1] "pen"
 ```
 
-The last examples show the importance of `typoprob`; in the dataset given `the` is more than 5 times as frequent as `he` but less than 50 times. So the decision between whether `he` was typo'd or not comes down to this probability.
+The last examples show the importance of `typoprob`; in the dataset given `men` is more than 50 times as frequent as `pen` but less than 100 times. So the decision between whether `pen` was typo'd or not comes down to this probability.
 
 ## Possible improvements
 
