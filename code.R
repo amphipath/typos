@@ -126,7 +126,6 @@ typofind <- function(string,typoprob) {
   #sort and return the most likely intended word
   if(nrow(candidates) > 0) {
     candidates <- head(candidates[order(candidates$score,decreasing = TRUE),],-1)
-    print(candidates)
     return(candidates[1,1])
   }
   else {
